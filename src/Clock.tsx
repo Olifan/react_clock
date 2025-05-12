@@ -11,18 +11,22 @@ type ClockState = {
 export class Clock extends React.Component<ClockProps, ClockState> {
   timerId: number | null = null;
 
-  state: ClockState = {
-    time: new Date().toUTCString().slice(-12, -4),
-  };
+  constructor(props: ClockProps) {
+    super(props);
+    // eslint-disable-next-line react/state-in-constructor
+    this.state = {
+      time: this.getCurrentUTCTime(),
+    };
+  }
 
   componentDidMount() {
     this.timerId = window.setInterval(() => {
-      const time = new Date().toUTCString().slice(-12, -4);
+      const currentTime = this.getCurrentUTCTime();
 
-      this.setState({ time });
+      this.setState({ time: currentTime });
 
       // eslint-disable-next-line no-console
-      console.log(time);
+      console.log(currentTime);
     }, 1000);
   }
 
@@ -30,6 +34,15 @@ export class Clock extends React.Component<ClockProps, ClockState> {
     if (this.timerId !== null) {
       clearInterval(this.timerId);
     }
+  }
+
+  getCurrentUTCTime(): string {
+    const now = new Date();
+    const hours = now.getUTCHours().toString().padStart(2, '0');
+    const minutes = now.getUTCMinutes().toString().padStart(2, '0');
+    const seconds = now.getUTCSeconds().toString().padStart(2, '0');
+
+    return `${hours}:${minutes}:${seconds}`;
   }
 
   render() {
